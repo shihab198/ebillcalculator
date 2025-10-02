@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electricity Bill Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 30px;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .shop-section {
+            border-left-color: #48bb78;
+        }
+        
+        .shop-section h2 {
+            color: #48bb78;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .results {
+            display: none;
+            margin-top: 30px;
+        }
+        
+        .result-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-left: 4px solid #667eea;
+        }
+        
+        .result-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+            font-weight: 600;
+            font-size: 18px;
+            color: #667eea;
+        }
+        
+        .result-label {
+            color: #666;
+        }
+        
+        .result-value {
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .total-summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+        }
+        
+        .total-summary .result-item {
+            border-bottom-color: rgba(255,255,255,0.2);
+            color: white;
+        }
+        
+        .total-summary .result-label,
+        .total-summary .result-value {
+            color: white;
+        }
+        
+        .error {
+            color: #e53e3e;
+            background: #fff5f5;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ Electricity Bill Calculator</h1>
+        
+        <div class="section">
+            <h2>Main Meter Information</h2>
+            <div class="input-group">
+                <label for="totalBill">Total Bill Amount (৳)</label>
+                <input type="number" id="totalBill" step="0.01" placeholder="Enter total bill amount">
+            </div>
+        </div>
+        
+        <div class="section shop-section">
+            <h2>Shop 1 - Sub Meter</h2>
+            <div class="input-group">
+                <label for="shop1Previous">Previous Reading (kWh)</label>
+                <input type="number" id="shop1Previous" step="0.01" placeholder="Enter previous reading">
+            </div>
+            <div class="input-group">
+                <label for="shop1Current">Current Reading (kWh)</label>
+                <input type="number" id="shop1Current" step="0.01" placeholder="Enter current reading">
+            </div>
+        </div>
+        
+        <div class="section shop-section">
+            <h2>Shop 2 - Sub Meter</h2>
+            <div class="input-group">
+                <label for="shop2Previous">Previous Reading (kWh)</label>
+                <input type="number" id="shop2Previous" step="0.01" placeholder="Enter previous reading">
+            </div>
+            <div class="input-group">
+                <label for="shop2Current">Current Reading (kWh)</label>
+                <input type="number" id="shop2Current" step="0.01" placeholder="Enter current reading">
+            </div>
+        </div>
+        
+        <div class="section shop-section">
+            <h2>Shop 3 - Sub Meter</h2>
+            <div class="input-group">
+                <label for="shop3Previous">Previous Reading (kWh)</label>
+                <input type="number" id="shop3Previous" step="0.01" placeholder="Enter previous reading">
+            </div>
+            <div class="input-group">
+                <label for="shop3Current">Current Reading (kWh)</label>
+                <input type="number" id="shop3Current" step="0.01" placeholder="Enter current reading">
+            </div>
+        </div>
+        
+        <div class="error" id="error"></div>
+        
+        <button class="btn" onclick="calculateBill()">Calculate Bills</button>
+        
+        <div class="results" id="results">
+            <div class="result-card total-summary">
+                <h3>📊 Summary</h3>
+                <div class="result-item">
+                    <span class="result-label">Total Consumption (All Shops):</span>
+                    <span class="result-value" id="totalSubConsumption">0 kWh</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Rate per kWh:</span>
+                    <span class="result-value" id="ratePerUnit">৳0.00</span>
+                </div>
+            </div>
+            
+            <div class="result-card">
+                <h3>🏪 Shop 1</h3>
+                <div class="result-item">
+                    <span class="result-label">Consumption:</span>
+                    <span class="result-value" id="shop1Consumption">0 kWh</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Percentage:</span>
+                    <span class="result-value" id="shop1Percentage">0%</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Bill Amount:</span>
+                    <span class="result-value" id="shop1Bill">৳0.00</span>
+                </div>
+            </div>
+            
+            <div class="result-card">
+                <h3>🏪 Shop 2</h3>
+                <div class="result-item">
+                    <span class="result-label">Consumption:</span>
+                    <span class="result-value" id="shop2Consumption">0 kWh</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Percentage:</span>
+                    <span class="result-value" id="shop2Percentage">0%</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Bill Amount:</span>
+                    <span class="result-value" id="shop2Bill">৳0.00</span>
+                </div>
+            </div>
+            
+            <div class="result-card">
+                <h3>🏪 Shop 3</h3>
+                <div class="result-item">
+                    <span class="result-label">Consumption:</span>
+                    <span class="result-value" id="shop3Consumption">0 kWh</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Percentage:</span>
+                    <span class="result-value" id="shop3Percentage">0%</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Bill Amount:</span>
+                    <span class="result-value" id="shop3Bill">৳0.00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function calculateBill() {
+            const error = document.getElementById('error');
+            error.style.display = 'none';
+            
+            // Get total bill
+            const totalBill = parseFloat(document.getElementById('totalBill').value);
+            
+            // Get shop 1 values
+            const shop1Prev = parseFloat(document.getElementById('shop1Previous').value);
+            const shop1Curr = parseFloat(document.getElementById('shop1Current').value);
+            
+            // Get shop 2 values
+            const shop2Prev = parseFloat(document.getElementById('shop2Previous').value);
+            const shop2Curr = parseFloat(document.getElementById('shop2Current').value);
+            
+            // Get shop 3 values
+            const shop3Prev = parseFloat(document.getElementById('shop3Previous').value);
+            const shop3Curr = parseFloat(document.getElementById('shop3Current').value);
+            
+            // Validate inputs
+            if (isNaN(totalBill) ||
+                isNaN(shop1Prev) || isNaN(shop1Curr) ||
+                isNaN(shop2Prev) || isNaN(shop2Curr) ||
+                isNaN(shop3Prev) || isNaN(shop3Curr)) {
+                error.textContent = 'Please fill in all fields with valid numbers.';
+                error.style.display = 'block';
+                return;
+            }
+            
+            // Calculate consumptions
+            const shop1Consumption = shop1Curr - shop1Prev;
+            const shop2Consumption = shop2Curr - shop2Prev;
+            const shop3Consumption = shop3Curr - shop3Prev;
+            const totalSubConsumption = shop1Consumption + shop2Consumption + shop3Consumption;
+            
+            // Validate consumptions
+            if (shop1Consumption < 0 || shop2Consumption < 0 || shop3Consumption < 0) {
+                error.textContent = 'Current readings must be greater than previous readings.';
+                error.style.display = 'block';
+                return;
+            }
+            
+            if (totalSubConsumption <= 0) {
+                error.textContent = 'Total consumption must be greater than zero.';
+                error.style.display = 'block';
+                return;
+            }
+            
+            // Calculate rate per unit
+            const ratePerUnit = totalBill / totalSubConsumption;
+            
+            // Calculate individual bills
+            const shop1Bill = shop1Consumption * ratePerUnit;
+            const shop2Bill = shop2Consumption * ratePerUnit;
+            const shop3Bill = shop3Consumption * ratePerUnit;
+            
+            // Calculate percentages
+            const shop1Percentage = (shop1Consumption / totalSubConsumption * 100).toFixed(2);
+            const shop2Percentage = (shop2Consumption / totalSubConsumption * 100).toFixed(2);
+            const shop3Percentage = (shop3Consumption / totalSubConsumption * 100).toFixed(2);
+            
+            // Display results
+            document.getElementById('totalSubConsumption').textContent = totalSubConsumption.toFixed(2) + ' kWh';
+            document.getElementById('ratePerUnit').textContent = '৳' + ratePerUnit.toFixed(2);
+            
+            document.getElementById('shop1Consumption').textContent = shop1Consumption.toFixed(2) + ' kWh';
+            document.getElementById('shop1Percentage').textContent = shop1Percentage + '%';
+            document.getElementById('shop1Bill').textContent = '৳' + shop1Bill.toFixed(2);
+            
+            document.getElementById('shop2Consumption').textContent = shop2Consumption.toFixed(2) + ' kWh';
+            document.getElementById('shop2Percentage').textContent = shop2Percentage + '%';
+            document.getElementById('shop2Bill').textContent = '৳' + shop2Bill.toFixed(2);
+            
+            document.getElementById('shop3Consumption').textContent = shop3Consumption.toFixed(2) + ' kWh';
+            document.getElementById('shop3Percentage').textContent = shop3Percentage + '%';
+            document.getElementById('shop3Bill').textContent = '৳' + shop3Bill.toFixed(2);
+            
+            document.getElementById('results').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
