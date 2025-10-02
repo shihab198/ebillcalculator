@@ -287,7 +287,7 @@
             <div class="memo-card">
                 <div class="memo-header">
                     <h3>Shop 1 Memo</h3>
-                    <button class="copy-btn" onclick="copyMemo('memo1')">Copy</button>
+                    <button class="copy-btn" onclick="copyMemo('memo1', event)">Copy</button>
                 </div>
                 <div class="memo-content" id="memo1"></div>
             </div>
@@ -295,7 +295,7 @@
             <div class="memo-card">
                 <div class="memo-header">
                     <h3>Shop 2 Memo</h3>
-                    <button class="copy-btn" onclick="copyMemo('memo2')">Copy</button>
+                    <button class="copy-btn" onclick="copyMemo('memo2', event)">Copy</button>
                 </div>
                 <div class="memo-content" id="memo2"></div>
             </div>
@@ -303,7 +303,7 @@
             <div class="memo-card">
                 <div class="memo-header">
                     <h3>Shop 3 Memo</h3>
-                    <button class="copy-btn" onclick="copyMemo('memo3')">Copy</button>
+                    <button class="copy-btn" onclick="copyMemo('memo3', event)">Copy</button>
                 </div>
                 <div class="memo-content" id="memo3"></div>
             </div>
@@ -526,11 +526,20 @@ Thank you for your cooperation.`;
             document.getElementById('memoSection').style.display = 'block';
         }
         
-        function copyMemo(memoId) {
+        function copyMemo(memoId, event) {
             const memoText = document.getElementById(memoId).textContent;
             const button = event.target;
             
-            navigator.clipboard.writeText(memoText).then(() => {
+            // Create a temporary textarea
+            const textarea = document.createElement('textarea');
+            textarea.value = memoText;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                document.execCommand('copy');
                 const originalText = button.textContent;
                 button.textContent = 'Copied!';
                 button.classList.add('copied');
@@ -539,9 +548,11 @@ Thank you for your cooperation.`;
                     button.textContent = originalText;
                     button.classList.remove('copied');
                 }, 2000);
-            }).catch(err => {
-                alert('Failed to copy memo. Please copy manually.');
-            });
+            } catch (err) {
+                alert('Failed to copy. Please select and copy manually.');
+            }
+            
+            document.body.removeChild(textarea);
         }
     </script>
 </body>
