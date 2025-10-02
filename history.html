@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bill History</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .history-card {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .history-body {
+            font-family: monospace;
+            font-size: 14px;
+            color: #333;
+            white-space: pre-wrap;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px 0;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .delete-btn {
+            background: #e53e3e;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>📜 Electricity Bill History</h1>
+    <a href="index.html" class="btn">⬅ Back to Calculator</a>
+
+    <div id="history"></div>
+
+    <script>
+        let db;
+
+        const request = indexedDB.open("BillCalculatorDB", 1);
+        request.onsuccess = function(event) {
+            db = event.target.result;
+            loadHistory();
+        };
+
+        function loadHistory() {
+            const tx = db.transaction("bills", "readonly");
+            const store = tx.objectStore("bills");
+            const request = store.getAll();
+
+            request.onsuccess = function() {
+                const history = request.result;
+                const container = document.getElementById("history");
+                container.innerHTML = "";
+
+                if (history.length === 0) {
+                    container.innerHTML = "<p>No history found.</p>";
+                    return;
+                }
+
+                history.forEach(entry => {
+                    const card = document.createElement("div");
+                    card.classList.add("history-card");
+
+                    card.innerHTML = `
+                        <div class="history-header">
+                            <span>${entry.date}</span>
+                            <span>Total: ৳${entry.totalBill.toFixed(2)}</span>
+                        </div>
+                        <div class="history-body">
+Shops:
+${entry.shops.map(shop => 
+`${shop.name}: ${shop.consumption.toFixed(2)} kWh 
+Bill: ৳${shop.bill.toFixed(2)}`
+).join("\n\n")}
+                        </div>
+                        <button class="btn delete-btn" onclick="deleteBill(${entry.id})">🗑 Delete</button>
+                    `;
+                    container.appendChild(card);
+                });
+            };
+        }
+
+        function deleteBill(id) {
+            const tx = db.transaction("bills", "readwrite");
+            const store = tx.objectStore("bills");
+            store.delete(id);
+            loadHistory();
+        }
+    </script>
+</body>
+</html>
